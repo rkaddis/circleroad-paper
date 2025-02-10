@@ -37,22 +37,26 @@ cchung@ltu.edu}
 \maketitle
 
 \begin{abstract}
-    This research investigates the optimization of Convolutional Neural Networks (CNNs) for self-driving car applications using the (n+m) Evolutionary Strategy (ES) with the 1/5th success rule. The objective is to develop a lightweight CNN model (small enough to run on cars) capable of real-time steering angle prediction, mimicking human driving behavior on a predefined path. The ES algorithm automates hyperparameter tuning, dynamically adjusting parameters such as learning rate and filter sizes. By employing the 1/5th success rule, mutation step sizes are adaptively scaled to balance exploration of the search space with the refinement of optimal solutions.
-
-    Data collection encompasses diverse driving scenarios recorded via the LTU ACTor autonomous driving platform. These include variations in path direction and driving style, enhancing model generalizability across environmental conditions. The dataset consists of timestamped images labeled with steering angles and pre-processed to focus on relevant visual information, such as the driving path.
+    This research investigates the optimization of Convolutional Neural Networks (CNNs) for autonomous steering using the (N+M) Evolutionary Strategy (ES) with the 1/5th success rule. The primary objective is to develop a lightweight CNN model capable of real-time steering angle prediction, mimicking human driving behavior on predefined paths. The ES algorithm automates hyperparameter tuning, dynamically adjusting parameters such as filter sizes and layer configurations.
     
-    Initial experiments involve training a baseline CNN model, which is then refined using ES to significantly reduce model size while maintaining competitive predictive accuracy. The results highlight the viability of lightweight CNN architectures for real-time autonomous systems, striking a balance between computational efficiency and performance. This study not only advances LTU's research initiatives but also lays the groundwork for deploying cost-effective, scalable solutions in self-driving technology.
+    Data collection encompasses driving scenarios recorded via the LTU ACTor autonomous driving platform, including variations in path direction and driving style. The dataset consists of timestamped images labeled with steering angles, pre-processed to focus on relevant visual information.
     
+    Initial experiments involve training a baseline CNN model, which is then refined using ES to significantly reduce model size while maintaining competitive predictive accuracy. The results highlight the viability of lightweight CNN architectures for real-time autonomous systems, striking a balance between computational efficiency and performance. This study not only advances research initiatives in using evolutionary strategies for autonomous driving applications but also lays the groundwork for deploying cost-effective, scalable solutions in self-driving technology.
 \end{abstract}
 
 \begin{IEEEkeywords}
-component, formatting, style, styling, insert.
+Evolutionary strategy, Hyperparameter optimization, Convolutional neural networks, Autonomous driving, Deep learning
 \end{IEEEkeywords}
 
 \section{Introduction}
-Autonomous driving systems require robust models capable of making real-time decisions under varying conditions. A critical component of these systems is the prediction of steering angles based on camera input, which involves processing visual data effectively and efficiently [3] on a compute limited on-board processor. This research focuses on optimizing CNNs leveraging evolutionary strategies (ES) to automate the search for the best-performing and best size-reduced model configurations. ES enables optimizing with high-dimensional search spaces (lots of unknown parameters) without requiring predefined search spaces.
+Autonomous driving systems require robust models capable of making real-time decisions under varying conditions. A critical component of these systems is the prediction of steering angles based on camera input, which involves processing visual data effectively and efficiently on compute-limited on-board processors. This research focuses on training and optimizing CNNs leveraging evolutionary strategies (ES) to automate the search for the best-performing and best size-reduced model configurations.
 
-Data Collection Equipment: The LTU ACTor autonomous driving platform, integrated with the Robot Operating System (ROS), was employed for data collection. A rosbag file, a standard ROS format for recording sensor data streams, captured images from the vehicle’s forward-facing camera and the corresponding steering angles [4]. This setup provided synchronized visual data and control signals essential for model training.
+This research directly addresses the limitations that come with larger models and limited data. Larger models, while often achieving higher accuracy, come with increased computational cost and memory requirements, which can lead to slower inference times and higher energy consumption []. This poses a significant challenge for real-time applications like autonomous driving, where split-second decisions and energy efficiency are crucial. The size of a model directly impacts its deployment feasibility, particularly in resource-constrained on-board processors [].
+
+Furthermore, the performance of deep learning models is heavily reliant on the availability of large, diverse, and labeled datasets []. In the context of autonomous driving, collecting and annotating such datasets for every conceivable scenario is impractical and cost-prohibitive []. Limited data can lead to overfitting, where the model performs well on the training data but fails to generalize to unseen scenarios, ultimately compromising the safety and reliability of autonomous driving systems [].
+
+\subsection{Data Collection Equipment}
+The LTU ACTor autonomous driving platform, integrated with the Robot Operating System (ROS), was employed for data collection. A rosbag file, a standard ROS format for recording sensor data streams, captured images from the vehicle’s forward-facing camera and the corresponding steering angles. This setup provided synchronized visual data and control signals essential for model training.
 
 
 \subsection{Data Collection Environment}
@@ -70,7 +74,7 @@ The final dataset comprised of 2957 images (split into 70\% Train: 2069 + 20% Va
 
 \section{Research Goals}
 Use the (n+m) Evolutionary Strategy (ES) with the 1/5 success rule to automate hyperparameter tuning.
-Minimize the size of the CNN model (parameters and memory footprint) while maintaining satisfactory performance for steering angle prediction. [2]
+Minimize the size of the CNN model (parameters and memory footprint) while maintaining satisfactory performance for steering angle prediction.
 Validate the applicability of ES-optimized models in real-world autonomous systems.
 
 \section{Methodology}
@@ -78,7 +82,7 @@ Validate the applicability of ES-optimized models in real-world autonomous syste
 Model Training and Establishing a Baseline Model
 Models are trained using the Keras API for Python on top of PyTorch backend to leverage GPU compute capacity. The models were trained on our dataset using the Mean Squared Error (MSE) loss function, which quantifies the average squared difference between predicted and actual steering angles. Lower MSE value and lower MAE value both indicate better performance. This serves as a benchmark for evaluating the improvements introduced by the evolution strategy (ES) with 1/5 success rule optimized models.
 
-We began with a single-layer CNN as a simple baseline model. However, it quickly became evident that such a simplistic architecture lacked the capacity to produce results suitable for real-world applications. To address this, we adopted PilotNet—a pre-designed CNN developed by NVIDIA [1]. PilotNet, an early milestone in autonomous steering research, demonstrated the potential of GPU-accelerated deep learning for this domain.
+We began with a single-layer CNN as a simple baseline model. However, it quickly became evident that such a simplistic architecture lacked the capacity to produce results suitable for real-world applications. To address this, we adopted PilotNet—a pre-designed CNN developed by NVIDIA. PilotNet, an early milestone in autonomous steering research, demonstrated the potential of GPU-accelerated deep learning for this domain.
 
 Additionally, early stopping was added to stop the training instances after 4 epochs with no improvement in mean squared error metric. This prevents hyperparameters with no impact towards model improvement from consuming time and processing power.
 
@@ -94,7 +98,7 @@ The CNN hyperparameters—such as the number of filters in convolutional layers 
 \subsection{ES Algorithm}
 The process proceeds as follows:
 Initialization: Generate and train N parent models with random hyperparameters within predefined ranges.
-Child Generation: Create M offspring by mutating parent hyperparameters with: 
+Child Generation: Create M offspring by mutating parent hyperparameters with:
 
 \begin{equation}
     \hat{h} = h + \text{gauss}(\sigma * (\text{max}(h) - \text{min}(h)))
@@ -116,10 +120,7 @@ This process iterates until the mutation step size ($\sigma$) is dynamically opt
 \end{equation}
 
 
-where $\alpha$ increases the step size, $\beta$ decreases it based on success rate—the fraction of offspring outperforming their parents. This ensures efficient exploration of the hyperparameter space while avoiding local minima.
-
-Computational Resources
-Training was performed on Lawrence Technological University’s NVIDIA A100 GPU server, enabling efficient parallel training of N parents and M offsprings model pools. 
+where $\alpha$ increases the step size, $\beta$ decreases it based on success rate—the fraction of offspring outperforming their parents. This ensures efficient exploration of the hyperparameter space while avoiding local minima.Computational Resources: Training was performed on Lawrence Technological University’s NVIDIA A100 GPU server, enabling efficient parallel training of N parents and M offsprings model pools.
 
 Using a larger pool of parents and offsprings allows for the algorithm to explore the solution space nearby the current parameters. The larger N and M are, the faster the evolutionary search can find a viable solution. This enables an increase in N and M values as model size decreases. The 80GB VRAM of this GPU allows using higher N and M values to balance the tradeoff between exploration and exploitation.
 
@@ -135,7 +136,7 @@ Real-time Performance: Visual results confirm that the optimized models deliver 
 
 In the future, we plan to:
 Expand the dataset by recording driving data on various roads across the LTU campus, including different surfaces, path geometries, and lighting conditions.
-Add Recurrent Neural Network layers to train models based on the past steering inputs [5]
+Add Recurrent Neural Network layers to train models based on the past steering inputs
 Deploy the optimized CNN models on the LTU ACTor autonomous driving platform.
 Evaluate optimized models on low-power compute platforms, such as NVIDIA Jetson or Raspberry Pi, to assess scalability for cost-effective systems.
 
@@ -143,30 +144,30 @@ Evaluate optimized models on low-power compute platforms, such as NVIDIA Jetson 
 
 \section*{Acknowledgment}
 
-The preferred spelling of the word ``acknowledgment'' in America is without 
-an ``e'' after the ``g''. Avoid the stilted expression ``one of us (R. B. 
-G.) thanks $\ldots$''. Instead, try ``R. B. G. thanks$\ldots$''. Put sponsor 
+The preferred spelling of the word ``acknowledgment'' in America is without
+an ``e'' after the ``g''. Avoid the stilted expression ``one of us (R. B.
+G.) thanks $\ldots$''. Instead, try ``R. B. G. thanks$\ldots$''. Put sponsor
 acknowledgments in the unnumbered footnote on the first page.
 
 \section*{References}
 
-Please number citations consecutively within brackets \cite{b1}. The 
-sentence punctuation follows the bracket \cite{b2}. Refer simply to the reference 
-number, as in \cite{b3}---do not use ``Ref. \cite{b3}'' or ``reference \cite{b3}'' except at 
+Please number citations consecutively within brackets \cite{b1}. The
+sentence punctuation follows the bracket \cite{b2}. Refer simply to the reference
+number, as in \cite{b3}---do not use ``Ref. \cite{b3}'' or ``reference \cite{b3}'' except at
 the beginning of a sentence: ``Reference \cite{b3} was the first $\ldots$''
 
-Number footnotes separately in superscripts. Place the actual footnote at 
-the bottom of the column in which it was cited. Do not put footnotes in the 
+Number footnotes separately in superscripts. Place the actual footnote at
+the bottom of the column in which it was cited. Do not put footnotes in the
 abstract or reference list. Use letters for table footnotes.
 
-Unless there are six authors or more give all authors' names; do not use 
-``et al.''. Papers that have not been published, even if they have been 
-submitted for publication, should be cited as ``unpublished'' \cite{b4}. Papers 
-that have been accepted for publication should be cited as ``in press'' \cite{b5}. 
-Capitalize only the first word in a paper title, except for proper nouns and 
+Unless there are six authors or more give all authors' names; do not use
+``et al.''. Papers that have not been published, even if they have been
+submitted for publication, should be cited as ``unpublished'' \cite{b4}. Papers
+that have been accepted for publication should be cited as ``in press'' \cite{b5}.
+Capitalize only the first word in a paper title, except for proper nouns and
 element symbols.
 
-For papers published in translation journals, please give the English 
+For papers published in translation journals, please give the English
 citation first, followed by the original foreign-language citation \cite{b6}.
 
 \begin{thebibliography}{00}
@@ -186,3 +187,4 @@ citation first, followed by the original foreign-language citation \cite{b6}.
 
 
 \end{document}
+b2
