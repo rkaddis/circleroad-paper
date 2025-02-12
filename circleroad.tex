@@ -45,13 +45,13 @@
 \end{abstract}
 
 \begin{IEEEkeywords}
-    Evolutionary strategy, Hyperparameter optimization, Convolutional neural networks, Lightweight CNN, Autonomous driving, Deep learning, Real-time performance
+    Evolutionary strategy, Hyperparameter optimization, Convolutional neural networks, Lightweight CNN, Autonomous driving, Deep learning, Real-time performance, Autonomous vehicles, Cameras
 \end{IEEEkeywords}
 
 \section{Introduction}
 Autonomous driving systems require robust models capable of making real-time decisions under varying conditions. A critical component of these systems is the prediction of steering angles based on camera input, which involves processing visual data effectively and efficiently on compute-limited on-board processors. This research focuses on training and optimizing CNNs leveraging evolutionary strategies (ES) to automate the search for the best-performing and best size-reduced model configurations.
 
-This research directly addresses the limitations that come with larger models and limited data. Larger models, while often achieving higher accuracy, come with increased computational cost and memory requirements, which can lead to slower inference times and higher energy consumption \cite{b1}. This poses a significant challenge for real-time applications like autonomous driving, where split-second decisions and energy efficiency are crucial. The size of a model directly impacts its deployment feasibility, particularly in resource-constrained on-board processors \cite{b1}. Minimizing model size while also training with limited data is the core design challenge in autonomous driving systems.
+This research directly addresses the limitations that come with larger models and limited data. Larger models, while often achieving higher accuracy, come with increased computational cost and memory requirements, which can lead to slower inference times and higher energy consumption \cite{bojarski2016endtoend}. This poses a significant challenge for real-time applications like autonomous driving, where split-second decisions and energy efficiency are crucial. The size of a model directly impacts its deployment feasibility, particularly in resource-constrained on-board processors \cite{b1}. Minimizing model size while also training with limited data is the core design challenge in autonomous driving systems.
 
 Furthermore, the performance of deep learning models is heavily reliant on the availability of large, diverse, and labeled datasets \cite{b1}. In the context of autonomous driving, collecting and annotating such datasets for every conceivable scenario is impractical and cost-prohibitive \cite{b1} Even though limited data can lead to overfitting, where the model performs well on the training data but fails to generalize to unseen scenarios, this is often not a problem in real-world applications where the operational design domain (i.e., the area of interest) is regulated. With this method, we can leverage adding small datasets everyime the domain expands and utilize techniques like transfer learning and few shot learning to improve model performance over time \cite{b1}. While optimization techniques have been extensively explored in various domains, their application to creating lightweight and adaptable models for autonomous driving, specifically for real-time steering angle prediction, remains an active area of research.
 
@@ -171,21 +171,8 @@ element symbols.
 For papers published in translation journals, please give the English
 citation first, followed by the original foreign-language citation \cite{b6}.
 
-\begin{thebibliography}{00}
-    \bibitem{b1} G. Eason, B. Noble, and I. N. Sneddon, ``On certain integrals of Lipschitz-Hankel type involving products of Bessel functions,'' Phil. Trans. Roy. Soc. London, vol. A247, pp. 529--551, April 1955.
-    \bibitem{b2} J. Clerk Maxwell, A Treatise on Electricity and Magnetism, 3rd ed., vol. 2. Oxford: Clarendon, 1892, pp.68--73.
-    \bibitem{b3} I. S. Jacobs and C. P. Bean, ``Fine particles, thin films and exchange anisotropy,'' in Magnetism, vol. III, G. T. Rado and H. Suhl, Eds. New York: Academic, 1963, pp. 271--350.
-    \bibitem{b4} K. Elissa, ``Title of paper if known,'' unpublished.
-    \bibitem{b5} R. Nicole, ``Title of paper with only first word capitalized,'' J. Name Stand. Abbrev., in press.
-    \bibitem{b6} Y. Yorozu, M. Hirano, K. Oka, and Y. Tagawa, ``Electron spectroscopy studies on magneto-optical media and plastic substrate interface,'' IEEE Transl. J. Magn. Japan, vol. 2, pp. 740--741, August 1987 [Digests 9th Annual Conf. Magnetics Japan, p. 301, 1982].
-    \bibitem{b7} M. Young, The Technical Writer's Handbook. Mill Valley, CA: University Science, 1989.
-    \bibitem{b8} D. P. Kingma and M. Welling, ``Auto-encoding variational Bayes,'' 2013, arXiv:1312.6114. [Online]. Available: https://arxiv.org/abs/1312.6114
-    \bibitem{b9} S. Liu, ``Wi-Fi Energy Detection Testbed (12MTC),'' 2023, gitHub repository. [Online]. Available: https://github.com/liustone99/Wi-Fi-Energy-Detection-Testbed-12MTC
-    \bibitem{b10} ``Treatment episode data set: discharges (TEDS-D): concatenated, 2006 to 2009.'' U.S. Department of Health and Human Services, Substance Abuse and Mental Health Services Administration, Office of Applied Studies, August, 2013, DOI:10.3886/ICPSR30122.v2
-    \bibitem{b11} K. Eves and J. Valasek, ``Adaptive control for singularly perturbed systems examples,'' Code Ocean, Aug. 2023. [Online]. Available: https://codeocean.com/capsule/4989235/tree
-\end{thebibliography}
-
-
+\bibliographystyle{plain} % We choose the "plain" reference style
+\bibliography{references} % Entries are in the references.bib file
 
 \end{document}
 b2

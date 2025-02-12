@@ -1,0 +1,18 @@
+\begin{thebibliography}{1}
+
+\bibitem{bojarski2016endtoend}
+Mariusz Bojarski, Davide Del~Testa, Daniel Dworakowski, Bernhard Firner, Beat Flepp, Prasoon Goyal, Lawrence~D Jackel, Mathew Monfort, Urs Muller, Jiakai Zhang, et~al.
+\newblock End to end learning for self-driving cars.
+\newblock {\em arXiv preprint arXiv:1604.07316}, 2016.
+
+\bibitem{texbook}
+Donald~E. Knuth.
+\newblock {\em The {\TeX} Book}.
+\newblock Addison-Wesley Professional, 1986.
+
+\bibitem{latex2e}
+Leslie Lamport.
+\newblock {\em {\LaTeX}: a Document Preparation System}.
+\newblock Addison Wesley, Massachusetts, 2 edition, 1994.
+
+\end{thebibliography}
