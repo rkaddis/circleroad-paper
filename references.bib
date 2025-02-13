@@ -1,17 +1,3 @@
-@article{PilotNET_application,
-  title   = {End to end learning for self-driving cars},
-  author  = {Bojarski, Mariusz and Del Testa, Davide and Dworakowski, Daniel and Firner, Bernhard and Flepp, Beat and Goyal, Prasoon and Jackel, Lawrence D and Monfort, Mathew and Muller, Urs and Zhang, Jiakai and others},
-  journal = {arXiv preprint arXiv:1604.07316},
-  year    = {2016}
-}
-
-@article{PilotNET,
-  title   = {Explaining how a deep neural network trained with end-to-end learning steers a car},
-  author  = {Bojarski, Mariusz and Yeres, Philip and Choromanska, Anna and Choromanski, Krzysztof and Firner, Bernhard and Jackel, Lawrence and Muller, Urs},
-  journal = {arXiv preprint arXiv:1704.07911},
-  year    = {2017}
-}
-
 @inproceedings{CNN_can_self_drive,
   author    = {Jhung, Junekyo and Bae, Il and Moon, Jaeyoung and Kim, Taewoo and Kim, Jincheol and Kim, Shiho},
   booktitle = {2018 IEEE Intelligent Vehicles Symposium (IV)},
@@ -24,16 +10,82 @@
   doi       = {10.1109/IVS.2018.8500440}
 }
 
-@inproceedings{self_drive_latency_and_model_size_drawbacks,
-  author    = {Do, Truong-Dong and Duong, Minh-Thien and Dang, Quoc-Vu and Le, My-Ha},
-  booktitle = {2018 4th International Conference on Green Technology and Sustainable Development (GTSD)},
-  title     = {Real-Time Self-Driving Car Navigation Using Deep Neural Network},
-  year      = {2018},
+@article{ES_introduction,
+  author     = {Beyer, Hans-Georg and Schwefel, Hans-Paul},
+  title      = {Evolution strategies – A comprehensive introduction},
+  year       = {2002},
+  issue_date = {May 2002},
+  publisher  = {Kluwer Academic Publishers},
+  address    = {USA},
+  volume     = {1},
+  number     = {1},
+  issn       = {1567-7818},
+  url        = {https://doi.org/10.1023/A:1015059928466},
+  doi        = {10.1023/A:1015059928466},
+  journal    = {Natural Computing: An International Journal},
+  pages      = {3–52},
+  numpages   = {50},
+  keywords   = {Darwinian evolution, computational intelligence, design principles for genetic operators, evolution strategies, evolutionary computation, optimization}
+}
+
+@article{ES_one_fifth_rule,
+  author  = {Vent, W.},
+  title   = {Rechenberg, Ingo, Evolutionsstrategie — Optimierung technischer Systeme nach Prinzipien der biologischen Evolution. 170 S. mit 36 Abb. Frommann-Holzboog-Verlag. Stuttgart 1973. Broschiert},
+  journal = {Feddes Repertorium},
+  volume  = {86},
+  number  = {5},
+  pages   = {337-337},
+  doi     = {https://doi.org/10.1002/fedr.19750860506},
+  url     = {https://onlinelibrary.wiley.com/doi/abs/10.1002/fedr.19750860506},
+  eprint  = {https://onlinelibrary.wiley.com/doi/pdf/10.1002/fedr.19750860506},
+  year    = {1975}
+}
+
+@misc{ES_scalable,
+  title         = {Evolution Strategies as a Scalable Alternative to Reinforcement Learning},
+  author        = {Tim Salimans and Jonathan Ho and Xi Chen and Szymon Sidor and Ilya Sutskever},
+  year          = {2017},
+  eprint        = {1703.03864},
+  archiveprefix = {arXiv},
+  primaryclass  = {stat.ML},
+  url           = {https://arxiv.org/abs/1703.03864}
+}
+
+@inproceedings{few_shot_learning,
+  author    = {Snell, Jake and Swersky, Kevin and Zemel, Richard},
+  booktitle = {Advances in Neural Information Processing Systems},
+  editor    = {I. Guyon and U. Von Luxburg and S. Bengio and H. Wallach and R. Fergus and S. Vishwanathan and R. Garnett},
+  pages     = {},
+  publisher = {Curran Associates, Inc.},
+  title     = {Prototypical Networks for Few-shot Learning},
+  url       = {https://proceedings.neurips.cc/paper_files/paper/2017/file/cb8da6767461f2812ae4290eac7cbc42-Paper.pdf},
+  volume    = {30},
+  year      = {2017}
+}
+
+@inproceedings{ImageNET_large_scale_database,
+  author    = {Deng, Jia and Dong, Wei and Socher, Richard and Li, Li-Jia and Kai Li and Li Fei-Fei},
+  booktitle = {2009 IEEE Conference on Computer Vision and Pattern Recognition},
+  title     = {ImageNet: A large-scale hierarchical image database},
+  year      = {2009},
   volume    = {},
   number    = {},
-  pages     = {7-12},
-  keywords  = {Automobiles;Computational modeling;Neural networks;Hardware;Cameras;Real-time systems;Autonomous automobiles;real-time navigation;self-driving car;deep neural networks;convolutional neural networks;embedded systems.},
-  doi       = {10.1109/GTSD.2018.8595590}
+  pages     = {248-255},
+  keywords  = {Large-scale systems;Image databases;Explosions;Internet;Robustness;Information retrieval;Image retrieval;Multimedia databases;Ontologies;Spine},
+  doi       = {10.1109/CVPR.2009.5206848}
+}
+
+@article{KITTI_dataset,
+  author  = {A Geiger and P Lenz and C Stiller and R Urtasun},
+  title   = {Vision meets robotics: The KITTI dataset},
+  journal = {The International Journal of Robotics Research},
+  volume  = {32},
+  number  = {11},
+  pages   = {1231-1237},
+  year    = {2013},
+  doi     = {10.1177/0278364913491297},
+  url     = {https://doi.org/10.1177/0278364913491297},
+  eprint  = {https://doi.org/10.1177/0278364913491297}
 }
 
 @article{lane_detection_good_results_zigzag,
@@ -45,4 +97,41 @@
   volume  = {31},
   journal = {Indonesian Journal of Electrical Engineering and Computer Science},
   doi     = {10.11591/ijeecs.v31.i1.pp1-1x}
+}
+
+@misc{MobileNET_size_and_speed,
+  title         = {MobileNets: Efficient Convolutional Neural Networks for Mobile Vision Applications},
+  author        = {Andrew G. Howard and Menglong Zhu and Bo Chen and Dmitry Kalenichenko and Weijun Wang and Tobias Weyand and Marco Andreetto and Hartwig Adam},
+  year          = {2017},
+  eprint        = {1704.04861},
+  archiveprefix = {arXiv},
+  primaryclass  = {cs.CV},
+  url           = {https://arxiv.org/abs/1704.04861}
+}
+
+
+@article{PilotNET,
+  title   = {Explaining how a deep neural network trained with end-to-end learning steers a car},
+  author  = {Bojarski, Mariusz and Yeres, Philip and Choromanska, Anna and Choromanski, Krzysztof and Firner, Bernhard and Jackel, Lawrence and Muller, Urs},
+  journal = {arXiv preprint arXiv:1704.07911},
+  year    = {2017}
+}
+
+@article{PilotNET_application,
+  title   = {End to end learning for self-driving cars},
+  author  = {Bojarski, Mariusz and Del Testa, Davide and Dworakowski, Daniel and Firner, Bernhard and Flepp, Beat and Goyal, Prasoon and Jackel, Lawrence D and Monfort, Mathew and Muller, Urs and Zhang, Jiakai and others},
+  journal = {arXiv preprint arXiv:1604.07316},
+  year    = {2016}
+}
+
+@inproceedings{self_drive_latency_and_model_size_drawbacks,
+  author    = {Do, Truong-Dong and Duong, Minh-Thien and Dang, Quoc-Vu and Le, My-Ha},
+  booktitle = {2018 4th International Conference on Green Technology and Sustainable Development (GTSD)},
+  title     = {Real-Time Self-Driving Car Navigation Using Deep Neural Network},
+  year      = {2018},
+  volume    = {},
+  number    = {},
+  pages     = {7-12},
+  keywords  = {Automobiles;Computational modeling;Neural networks;Hardware;Cameras;Real-time systems;Autonomous automobiles;real-time navigation;self-driving car;deep neural networks;convolutional neural networks;embedded systems.},
+  doi       = {10.1109/GTSD.2018.8595590}
 }

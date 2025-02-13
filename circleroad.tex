@@ -13,6 +13,18 @@
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 \begin{document}
 
+
+% fix for unaligned author blocks
+% from https://tex.stackexchange.com/questions/458204/ieeetran-document-class-how-to-align-five-authors-properly/458208#458208
+
+\makeatletter
+\newcommand{\linebreakand}{%
+    \end{@IEEEauthorhalign}
+    \hfill\mbox{}\par
+    \mbox{}\hfill\begin{@IEEEauthorhalign}
+}
+\makeatother
+
 \title{Evolutionary Hyperparameter Optimization to Find Lightweight CNN Models for Autonomous Steering}
 
 \author{\IEEEauthorblockN{Devson Butani}
@@ -26,7 +38,7 @@
         \textit{Lawrence Technological University}\\
         Southfield, MI, USA \\
         rkaddis@ltu.edu}
-    \and
+    \linebreakand
     \IEEEauthorblockN{Chan-Jin Chung}
     \IEEEauthorblockA{\textit{Department of Math and Computer Science} \\
         \textit{Lawrence Technological University}\\
@@ -49,13 +61,13 @@
 \end{IEEEkeywords}
 
 \section{Introduction}
-Autonomous driving systems require robust models capable of making real-time decisions under varying conditions. A critical component of these systems is the prediction of steering angles based on camera input, which involves processing visual data effectively and efficiently on compute-limited on-board processors. This research focuses on training and optimizing CNNs leveraging evolutionary strategies (ES) to automate the search for the best-performing and best size-reduced model configurations.
+Autonomous driving systems require robust models capable of making real-time decisions under varying conditions. A critical component of these systems is the prediction of steering angles based on camera input, which involves processing visual data effectively and efficiently on compute-limited on-board processors \cite{PilotNET_application}. This research focuses on training and optimizing CNNs leveraging evolutionary strategies (ES) to automate the search for the best-performing and best size-reduced model configurations.
 
-This research directly addresses the limitations that come with larger models and limited data. Larger models, while often achieving higher accuracy, come with increased computational cost and memory requirements, which can lead to slower inference times and higher energy consumption \cite{bojarski2016endtoend}. This poses a significant challenge for real-time applications like autonomous driving, where split-second decisions and energy efficiency are crucial. The size of a model directly impacts its deployment feasibility, particularly in resource-constrained on-board processors \cite{b1}. Minimizing model size while also training with limited data is the core design challenge in autonomous driving systems.
+This research directly addresses the limitations that come with larger models and limited data. Larger models, while often achieving higher accuracy, come with increased computational cost and memory requirements, which can lead to slower inference times and higher energy consumption \cite{self_drive_latency_and_model_size_drawbacks}. This poses a significant challenge for real-time applications like autonomous driving, where split-second decisions and energy efficiency are crucial. The size of a model directly impacts its deployment feasibility, particularly in resource-constrained on-board processors \cite{MobileNET_size_and_speed}. Minimizing model size while also training with limited data is the core design challenge in autonomous driving systems.
 
-Furthermore, the performance of deep learning models is heavily reliant on the availability of large, diverse, and labeled datasets \cite{b1}. In the context of autonomous driving, collecting and annotating such datasets for every conceivable scenario is impractical and cost-prohibitive \cite{b1} Even though limited data can lead to overfitting, where the model performs well on the training data but fails to generalize to unseen scenarios, this is often not a problem in real-world applications where the operational design domain (i.e., the area of interest) is regulated. With this method, we can leverage adding small datasets everyime the domain expands and utilize techniques like transfer learning and few shot learning to improve model performance over time \cite{b1}. While optimization techniques have been extensively explored in various domains, their application to creating lightweight and adaptable models for autonomous driving, specifically for real-time steering angle prediction, remains an active area of research.
+Furthermore, the performance of deep learning models is heavily reliant on the availability of large, diverse, and labeled datasets. In the context of autonomous driving, collecting and annotating such datasets for every conceivable scenario is impractical and cost-prohibitive \cite{ImageNET_large_scale_database} Even though limited data can lead to overfitting, where the model performs well on the training data but fails to generalize to unseen scenarios or conditions, this is often not a problem in real-world applications where the operational design domain (i.e., the area of interest) can be regulated. For example, deploying an autonomous vehicle specifically for a small city or a specific set of routes. With this method, we can leverage adding small datasets everyime the domain expands and utilize techniques like transfer learning and few shot learning to improve model performance over time \cite{few_shot_learning}. While optimization techniques have been extensively explored in various domains, their application to creating lightweight and adaptable models for autonomous driving, specifically for real-time steering angle prediction, remains an active area of research.
 
-Evolutionary Strategies (ES) offer a compelling advantage in this context. Unlike gradient-based optimization methods, which can struggle in complex, non-differentiable, or noisy search spaces, ES algorithms are well-suited for exploring such landscapes \cite{b1}. This is particularly relevant to hyperparameter optimization of CNNs for autonomous driving, where the relationship between model architecture, hyperparameters, and performance can be highly complex and non-linear.
+Evolutionary Strategies (ES) offer a compelling advantage in this context. ES is a population-based optimization algorithm that leverages the collective intelligence of a population of candidate solutions to find the best-performing solution within a given search space \cite{ES_introduction}. Unlike gradient-based optimization methods, which can struggle in complex, non-differentiable, or noisy search spaces, ES algorithms are well-suited for exploring such landscapes \cite{ES_scalable}. This is particularly relevant to hyperparameter optimization of CNNs for autonomous driving, where the relationship between model architecture, hyperparameters, and performance can be highly complex and non-linear.
 
 \subsection{Data Acquisition and Preprocessing}
 
@@ -81,7 +93,7 @@ The primary goals of this research are:
 Model Training and Establishing a Baseline Model
 Models are trained using the Keras API for Python on top of PyTorch backend to leverage GPU compute capacity. The models were trained on our dataset using the Mean Squared Error (MSE) loss function, which quantifies the average squared difference between predicted and actual steering angles. Lower MSE value and lower MAE value both indicate better performance. This serves as a benchmark for evaluating the improvements introduced by the evolution strategy (ES) with 1/5 success rule optimized models.
 
-We began with a single-layer CNN as a simple baseline model. However, it quickly became evident that such a simplistic architecture lacked the capacity to produce results suitable for real-world applications. To address this, we adopted PilotNet—a pre-designed CNN developed by NVIDIA. PilotNet, an early milestone in autonomous steering research, demonstrated the potential of GPU-accelerated deep learning for this domain.
+We began with a single-layer CNN as a simple baseline model. However, it quickly became evident that such a simplistic architecture lacked the capacity to produce results suitable for real-world applications. To address this, we adopted PilotNet—a pre-designed CNN developed by NVIDIA \cite{PilotNET}. PilotNet, an early milestone in autonomous steering research, demonstrated the potential of GPU-accelerated deep learning for this domain.
 
 Additionally, early stopping was added to stop the training instances after 4 epochs with no improvement in mean squared error metric. This prevents hyperparameters with no impact towards model improvement from consuming time and processing power.
 
@@ -109,7 +121,7 @@ Child Generation: Create M offspring by mutating parent hyperparameters with:
 where h represents a hyperparameter and $\sigma$ is the step size
 Training and Evaluation: Train all child models and evaluate their validation loss and accuracy.
 Selection: Retain the top N models (from parents and children) based on validation loss and accuracy to form the next generation's parents.
-This process iterates until the mutation step size ($\sigma$) is dynamically optimized using the 1/5 success rule:
+This process iterates until the mutation step size ($\sigma$) is dynamically optimized using the 1/5 success rule \cite{ES_one_fifth_rule}:
 
 \begin{equation}
     \sigma_{t+1} = \left\{
@@ -125,6 +137,8 @@ where $\alpha$ increases the step size, $\beta$ decreases it based on success ra
 
 Using a larger pool of parents and offsprings allows for the algorithm to explore the solution space nearby the current parameters. The larger N and M are, the faster the evolutionary search can find a viable solution. This enables an increase in N and M values as model size decreases. The 80GB VRAM of this GPU allows using higher N and M values to balance the tradeoff between exploration and exploitation.
 
+\subsection{Model Testing}
+Add paragraph detailing the real-time testing process using Gazelle Sim. Also describe how the pipeline works. References to use \cite{CNN_can_self_drive}, \cite{lane_detection_good_results_zigzag}, \cite{KITTI_dataset}.
 
 \section{Experimental Results}
 
@@ -152,10 +166,10 @@ acknowledgments in the unnumbered footnote on the first page.
 
 \section*{References}
 
-Please number citations consecutively within brackets \cite{b1}. The
-sentence punctuation follows the bracket \cite{b2}. Refer simply to the reference
-number, as in \cite{b3}---do not use ``Ref. \cite{b3}'' or ``reference \cite{b3}'' except at
-the beginning of a sentence: ``Reference \cite{b3} was the first $\ldots$''
+Please number citations consecutively within brackets \cite{}. The
+sentence punctuation follows the bracket \cite{}. Refer simply to the reference
+number, as in \cite{}---do not use ``Ref. \cite{}'' or ``reference \cite{}'' except at
+the beginning of a sentence: ``Reference \cite{} was the first $\ldots$''
 
 Number footnotes separately in superscripts. Place the actual footnote at
 the bottom of the column in which it was cited. Do not put footnotes in the
@@ -163,13 +177,13 @@ abstract or reference list. Use letters for table footnotes.
 
 Unless there are six authors or more give all authors' names; do not use
 ``et al.''. Papers that have not been published, even if they have been
-submitted for publication, should be cited as ``unpublished'' \cite{b4}. Papers
-that have been accepted for publication should be cited as ``in press'' \cite{b5}.
+submitted for publication, should be cited as ``unpublished'' \cite{}. Papers
+that have been accepted for publication should be cited as ``in press'' \cite{}.
 Capitalize only the first word in a paper title, except for proper nouns and
 element symbols.
 
 For papers published in translation journals, please give the English
-citation first, followed by the original foreign-language citation \cite{b6}.
+citation first, followed by the original foreign-language citation \cite{}.
 
 \bibliographystyle{plain} % We choose the "plain" reference style
 \bibliography{references} % Entries are in the references.bib file
