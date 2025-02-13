@@ -12,7 +12,9 @@
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 \begin{document}
-
+\pagestyle{plain}
+\pagenumbering{arabic} % Sets page numbering to arabic (1, 2, 3, ...)
+\setcounter{page}{1} % Specifies the starting page number
 
 % fix for unaligned author blocks
 % from https://tex.stackexchange.com/questions/458204/ieeetran-document-class-how-to-align-five-authors-properly/458208#458208
@@ -77,7 +79,7 @@ Evolutionary Strategies (ES) offer a compelling advantage in this context. ES is
 
 Figure...
 
-\textbf{Extraction and Preprocessing:} A custom script was developed to extract and preprocess data from rosbag files. Images were saved at 200 ms intervals, with filenames encoding timestamps and steering angles. Each image was cropped to exclude irrelevant regions, such as the sky and surrounding buildings. The resulting dataset consisted of 2,957 images, split into 70\% training (2,069), 20\% validation (592), and 10\% testing (296).
+\textbf{Extraction and Preprocessing:} A custom script was developed to extract and preprocess data from rosbag files. Images were saved at 200 ms intervals, with filenames encoding timestamps and steering angles. Each image was cropped to exclude irrelevant regions, such as the sky and surrounding buildings. The resulting dataset consisted of 2,957 images, split into 70\% training (2,069), 20\% validation (592), and 10\% testing (296). Even though the dataset is small, it is representative of real-world driving scenarios and provides a useful benchmark for evaluating model performance.
 
 \subsection{Research Goals}
 
@@ -90,55 +92,79 @@ The primary goals of this research are:
 
 \section{Methodology}
 
-Model Training and Establishing a Baseline Model
-Models are trained using the Keras API for Python on top of PyTorch backend to leverage GPU compute capacity. The models were trained on our dataset using the Mean Squared Error (MSE) loss function, which quantifies the average squared difference between predicted and actual steering angles. Lower MSE value and lower MAE value both indicate better performance. This serves as a benchmark for evaluating the improvements introduced by the evolution strategy (ES) with 1/5 success rule optimized models.
+\subsection{Model Training and Baseline Establishment}
 
-We began with a single-layer CNN as a simple baseline model. However, it quickly became evident that such a simplistic architecture lacked the capacity to produce results suitable for real-world applications. To address this, we adopted PilotNet—a pre-designed CNN developed by NVIDIA \cite{PilotNET}. PilotNet, an early milestone in autonomous steering research, demonstrated the potential of GPU-accelerated deep learning for this domain.
+Models are trained using the Keras API with a PyTorch backend to leverage GPU compute capacity. The training process employs the Mean Squared Error (MSE) loss function, which quantifies the average squared difference between predicted and actual steering angles. The Mean Absolute Error (MAE) serves as a key performance metric, directly indicating the average deviation in steering angle predictions in degrees. This provides a straightforward and interpretable measure of model accuracy for autonomous steering applications. Minimizing both MSE and MAE is crucial for achieving precise control of the vehicle. These metrics serve as benchmarks for evaluating the efficacy of the Evolutionary Strategy (ES) with the 1/5 success rule in optimizing model architectures.
 
-Additionally, early stopping was added to stop the training instances after 4 epochs with no improvement in mean squared error metric. This prevents hyperparameters with no impact towards model improvement from consuming time and processing power.
+Initial experiments began with a single-layer CNN to establish a rudimentary baseline. However, the limited capacity of this architecture quickly became apparent, rendering it unsuitable for real-world driving scenarios. To address this, the PilotNet architecture, a CNN developed by NVIDIA \cite{PilotNET} was adopted. PilotNet, an early milestone in autonomous steering research, demonstrated the potential of GPU-accelerated deep learning for this domain. Leveraging a proven architecture allowed for a more effective comparison of ES-optimized models against a recognized standard.
 
-Dataset and Hyperparameter Management
-The dataset was randomly divided into 70\% training, 20\% validation, and 10\% testing splits to ensure sufficient data for model evaluation. Initially, hyperparameters included individual layer units, batch sizes, learning rates, activation functions, and optimizer selection. The layer units ranged from 20\% of the baseline to 300\% as baseline to allow for a wide range of optimization in each layer.
+To enhance training efficiency and prevent over optimization, early stopping was implemented. Training instances are terminated if no improvement in the MSE metric is observed after four epochs. This strategy prevents the allocation of computational resources to hyperparameters that do not contribute to model performance, thereby accelerating the optimization process.
 
-However, after initial experiments, it was observed that reducing the optimization scope to focus solely on layer units significantly improved performance and reduced computation time. Consequently, batch size (32), learning rate (0.001), activation function (ReLU), and optimizer (Adam) were fixed to match the baseline model settings.
+\subsection{Hyperparameter Management}
 
-Mention HP ranges controlled...
+Initially, the hyperparameter space included individual layer units (number of filters in convolutional layers and neurons in fully connected layers), batch sizes, learning rates, activation functions, and optimizer selection. To facilitate a comprehensive exploration of potential architectures, layer units were allowed to vary from 20\% to 300\% of the PilotNet baseline.
 
-Optimization Framework
-The CNN hyperparameters—such as the number of filters in convolutional layers and the number of neurons in fully connected layers—were encoded as genes in an evolutionary strategy (ES) framework. Specifically, we employed the (N+M)-ES approach, which iteratively optimizes hyperparameters by combining the N best parent models and M offspring models generated through mutations.
+However, preliminary experiments indicated that focusing the optimization efforts solely on layer units resulted in improved performance and reduced search time significantly. Consequently, batch size (32), learning rate (0.001), activation function (ReLU), and optimizer (Adam) were fixed to match the baseline model settings. This narrowed scope allowed the Evolutionary Strategy (ES) to concentrate on the most impactful architectural parameters, leading to more efficient exploration of the design space. The ranges of the layer units explored are provided in Table X.
 
+\begin{tabular}{ |c|c| }
+    \hline
+    \textbf{Hyperparameter} & \textbf{Search Space}     \\ \hline
+    Layer Units             & 20\% to 300\% of PilotNet \\ \hline
+    Batch Size              & 1 - 32                    \\ \hline
+    Learning Rate           & 0.001 - 1.5               \\ \hline
+    Activation Function     & ReLU, eLU, Sigmoid, Tanh  \\ \hline
+    Optimizer               & Adam, SGD, RMSprop        \\ \hline
+\end{tabular}
+
+\subsection{Optimization Framework}
+
+CNN hyperparameters, specifically the number of filters in convolutional layers and the number of neurons in fully connected layers, are encoded as genes within an Evolutionary Strategy (ES) framework. The (N+M)-ES approach is employed, iteratively optimizing hyperparameters by combining the N best-performing parent models with M offspring models generated through mutation. This approach allows for both exploitation of promising regions of the hyperparameter space (through selection of top parents) and exploration of new possibilities (through mutation of offspring).
 
 \subsection{ES Algorithm}
-The process proceeds as follows:
-Initialization: Generate and train N parent models with random hyperparameters within predefined ranges.
-Child Generation: Create M offspring by mutating parent hyperparameters with:
 
-\begin{equation}
-    \hat{h} = h + \text{gauss}(\sigma * (\text{max}(h) - \text{min}(h)))
-\end{equation}
+The optimization process unfolds as follows:
 
+\begin{enumerate}
 
-where h represents a hyperparameter and $\sigma$ is the step size
-Training and Evaluation: Train all child models and evaluate their validation loss and accuracy.
-Selection: Retain the top N models (from parents and children) based on validation loss and accuracy to form the next generation's parents.
-This process iterates until the mutation step size ($\sigma$) is dynamically optimized using the 1/5 success rule \cite{ES_one_fifth_rule}:
+    \item \textbf{Initialization:} Generate and train N parent models with random hyperparameters sampled within predefined ranges. The initial hyperparameters are drawn from a uniform distribution within the specified ranges. The number of parents, N, is a tunable parameter that controls the diversity of the population.
 
-\begin{equation}
-    \sigma_{t+1} = \left\{
-    \begin{array}{ll}
-        \alpha * \sigma_t & \text{success rate} > \frac{1}{5}    \\
-        \beta * \sigma_t  & \text{success rate} \leq \frac{1}{5} \\
-    \end{array}
-    \right.
-\end{equation}
+    \item \textbf{Child Generation:} Create M offspring by mutating parent hyperparameters according to the following equation:
 
+          \begin{equation}
+              \hat{h} = h + \text{gauss}(\sigma * (\text{max}(h) - \text{min}(h)))
+          \end{equation}
 
-where $\alpha$ increases the step size, $\beta$ decreases it based on success rate—the fraction of offspring outperforming their parents. This ensures efficient exploration of the hyperparameter space while avoiding local minima.Computational Resources: Training was performed on Lawrence Technological University’s NVIDIA A100 GPU server, enabling efficient parallel training of N parents and M offsprings model pools.
+          where \(\hat{h}\) represents the mutated hyperparameter value. \(h\) is the original hyperparameter value from the parent model. \(\text{gauss}(\mu, \sigma)\) is a random number drawn from a Gaussian distribution with mean \(\mu\) and standard deviation \(\sigma\).  In this case, \(\mu = 0\). \(\sigma\) is the mutation step size, controlling the magnitude of the mutation. \(\text{max}(h)\) and \(\text{min}(h)\) define the upper and lower bounds of the hyperparameter search space, respectively.
+
+          The term \((\text{max}(h) - \text{min}(h))\) normalizes the mutation step size to the range of the hyperparameter, ensuring that the mutation is proportional to the scale of the parameter.
+
+    \item \textbf{Training and Evaluation:} Train all offspring models and evaluate their performance based on validation loss (MSE) and accuracy (MAE).
+
+    \item \textbf{Selection:} Retain the top N models (from parents and children) based on validation performance to form the next generation's parent population. This selection process ensures that the most promising models are carried forward, driving the evolution towards improved performance.
+
+          The mutation step size (\(\sigma\)) is dynamically adjusted using the 1/5 success rule \cite{ES_one_fifth_rule}:
+
+          \begin{equation}
+              \sigma_{t+1} = \left\{
+              \begin{array}{ll}
+                  \alpha * \sigma_t & \text{success rate} > \frac{1}{5}    \\
+                  \beta * \sigma_t  & \text{success rate} \leq \frac{1}{5} \\
+              \end{array}
+              \right.
+          \end{equation}
+
+          where \(\sigma_{t+1}\) is the updated step size for the next generation. \(\sigma_t\) is the current step size. \(\alpha > 1\) is a scaling factor to increase the step size (e.g., 1.1). \(\beta < 1\) is a scaling factor to decrease the step size (e.g., 0.9). The "success rate" is defined as the fraction of offspring that outperform their parents in terms of validation performance.
+
+          If the success rate is greater than 1/5, the step size is increased, encouraging greater exploration of the hyperparameter space. Conversely, if the success rate is less than or equal to 1/5, the step size is decreased, promoting more focused refinement of promising solutions. This adaptive mechanism ensures efficient exploration while avoiding premature convergence to local optima.
+
+\end{enumerate}
+
+\textbf{Computational Resources: } Training is performed on Lawrence Technological University's NVIDIA A100 GPU server, enabling efficient parallel training of N parent and M offspring model pools. The large VRAM capacity of the A100 GPU allows for the use of larger N and M values, which increases the diversity of the population and enhances the exploration of the hyperparameter space. The specific values of N and M are determined based on the available computational resources and the complexity of the optimization problem.
 
 Using a larger pool of parents and offsprings allows for the algorithm to explore the solution space nearby the current parameters. The larger N and M are, the faster the evolutionary search can find a viable solution. This enables an increase in N and M values as model size decreases. The 80GB VRAM of this GPU allows using higher N and M values to balance the tradeoff between exploration and exploitation.
 
 \subsection{Model Testing}
-Add paragraph detailing the real-time testing process using Gazelle Sim. Also describe how the pipeline works. References to use \cite{CNN_can_self_drive}, \cite{lane_detection_good_results_zigzag}, \cite{KITTI_dataset}.
+Add paragraph detailing the real-time testing process using a 2D Sim. Also describe how the pipeline works (image -> model -> steering). References to use \cite{CNN_can_self_drive}, \cite{lane_detection_good_results_zigzag}, \cite{KITTI_dataset}. Since there are many papers using a similar approach and are able to improve the performance over the years, adding our ES based optimization should allow for a significant improvement in performance and ability to deploy in real-time.
 
 \section{Experimental Results}
 

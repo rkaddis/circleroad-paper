@@ -2,8 +2,8 @@
 
 \bibitem{ES_introduction}
 Hans-Georg Beyer and Hans-Paul Schwefel.
-\newblock Evolution strategies - a comprehensive introduction.
-\newblock 1:3--52.
+\newblock Evolution strategies – a comprehensive introduction.
+\newblock {\em Natural Computing: An International Journal}, 1(1):3–52, 2002.
 
 \bibitem{PilotNET_application}
 Mariusz Bojarski, Davide Del~Testa, Daniel Dworakowski, Bernhard Firner, Beat Flepp, Prasoon Goyal, Lawrence~D Jackel, Mathew Monfort, Urs Muller, Jiakai Zhang, et~al.
@@ -56,7 +56,6 @@ Jake Snell, Kevin Swersky, and Richard Zemel.
 \bibitem{ES_one_fifth_rule}
 W.~Vent.
 \newblock Rechenberg, ingo, evolutionsstrategie — optimierung technischer systeme nach prinzipien der biologischen evolution. 170 s. mit 36 abb. frommann-holzboog-verlag. stuttgart 1973. broschiert.
-\newblock 86(5):337--337.
-\newblock \_eprint: https://onlinelibrary.wiley.com/doi/pdf/10.1002/fedr.19750860506.
+\newblock {\em Feddes Repertorium}, 86(5):337--337, 1975.
 
 \end{thebibliography}
