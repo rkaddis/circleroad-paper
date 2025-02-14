@@ -75,9 +75,14 @@ Evolutionary Strategies (ES) offer a compelling advantage in this context. ES is
 
 \textbf{Equipment:} The LTU ACTor autonomous driving platform, integrated with the Robot Operating System (ROS), was used for data collection. Sensor data, including images from the vehicle's forward-facing camera and corresponding steering angles, were recorded in rosbag files. This setup ensured synchronized visual and control data, essential for training and evaluating the models.
 
-\textbf{Environment:} Data was collected along a predefined circular path: the red brick path surrounding Ockham's Wedge at LTU. To introduce variability and enhance model robustness, driving sessions included clockwise and counterclockwise directions, smooth and zigzag maneuvers, and driving along inner and outer path edges to simulate diverse spatial alignments.  Figure X shows an overhead view of the data collection site.
+\textbf{Environment:} Data was collected along a predefined circular path: the red brick path surrounding Ockham's Wedge at LTU. To introduce variability and enhance model robustness, driving sessions included clockwise and counterclockwise directions, smooth and zigzag maneuvers, and driving along inner and outer path edges to simulate diverse spatial alignments.  Figure~\ref{fig:ockham} shows an overhead view of the data collection site.
 
-Figure...
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=3in]{assets/circle-maps.png}
+    \caption{ Aerial view of Ockham's Wedge at Lawrence Technological University. Data was collected from the red brick circle surrounding the art piece. }
+    \label{fig:ockham}
+\end{figure}
 
 \textbf{Extraction and Preprocessing:} A custom script was developed to extract and preprocess data from rosbag files. Images were saved at 200 ms intervals, with filenames encoding timestamps and steering angles. Each image was cropped to exclude irrelevant regions, such as the sky and surrounding buildings. The resulting dataset consisted of 2,957 images, split into 70\% training (2,069), 20\% validation (592), and 10\% testing (296). Even though the dataset is small, it is representative of real-world driving scenarios and provides a useful benchmark for evaluating model performance.
 
@@ -104,17 +109,37 @@ To enhance training efficiency and prevent over optimization, early stopping was
 
 Initially, the hyperparameter space included individual layer units (number of filters in convolutional layers and neurons in fully connected layers), batch sizes, learning rates, activation functions, and optimizer selection. To facilitate a comprehensive exploration of potential architectures, layer units were allowed to vary from 20\% to 300\% of the PilotNet baseline.
 
-However, preliminary experiments indicated that focusing the optimization efforts solely on layer units resulted in improved performance and reduced search time significantly. Consequently, batch size (32), learning rate (0.001), activation function (ReLU), and optimizer (Adam) were fixed to match the baseline model settings. This narrowed scope allowed the Evolutionary Strategy (ES) to concentrate on the most impactful architectural parameters, leading to more efficient exploration of the design space. The ranges of the layer units explored are provided in Table X.
+However, preliminary experiments indicated that focusing the optimization efforts solely on layer units resulted in improved performance and reduced search time significantly. Consequently, batch size (32), learning rate (0.001), activation function (ReLU), and optimizer (Adam) were fixed to match the baseline model settings. This narrowed scope allowed the Evolutionary Strategy (ES) to concentrate on the most impactful architectural parameters, leading to more efficient exploration of the design space. The ranges of the layer units explored are provided in Table~\ref{tab:searchspace}.
 
-\begin{tabular}{ |c|c| }
-    \hline
-    \textbf{Hyperparameter} & \textbf{Search Space}     \\ \hline
-    Layer Units             & 20\% to 300\% of PilotNet \\ \hline
-    Batch Size              & 1 - 32                    \\ \hline
-    Learning Rate           & 0.001 - 1.5               \\ \hline
-    Activation Function     & ReLU, eLU, Sigmoid, Tanh  \\ \hline
-    Optimizer               & Adam, SGD, RMSprop        \\ \hline
-\end{tabular}
+% \begin{tabular}{ |c|c| }
+%     \hline
+%     \textbf{Hyperparameter} & \textbf{Search Space}     \\ \hline
+%     Layer Units             & 20\% to 300\% of PilotNet \\ \hline
+%     Batch Size              & 1 - 32                    \\ \hline
+%     Learning Rate           & 0.001 - 1.5               \\ \hline
+%     Activation Function     & ReLU, eLU, Sigmoid, Tanh  \\ \hline
+%     Optimizer               & Adam, SGD, RMSprop        \\ \hline
+% \end{tabular}
+
+\begin{table}[h]
+    \centering
+    \caption{Hyperparameter Search Spaces}
+    \begin{tabular}{l|r}
+    
+        \textbf{Hyperparameter}  & \textbf{Search Space} \\
+        % \cmidrule{1-2}
+        \hline
+        Layer Units             & 20\% to 300\% of PilotNet \\
+        Batch Size              & 1 - 32                    \\
+        Learning Rate           & 0.001 - 1.5               \\
+        Activation Function     & ReLU, eLU, Sigmoid, Tanh  \\
+        Optimizer               & Adam, SGD, RMSprop        \\
+        
+    \end{tabular}
+    \label{tab:searchspace}
+\end{table}
+    
+
 
 \subsection{Optimization Framework}
 
@@ -168,6 +193,46 @@ Add paragraph detailing the real-time testing process using a 2D Sim. Also descr
 
 \section{Experimental Results}
 
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=3in]{assets/leftturn.png}
+    \caption{ Sample image from test data set. }
+    \label{fig:leftturn}
+\end{figure}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=3in]{assets/rightturn.png}
+    \caption{ Sample image from test data set. }
+    \label{fig:rightturn}
+\end{figure}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=3in]{assets/alexnet.png}
+    \caption{ AlexNet representation of the models. a) PilotNET architecture with baseline DNN layers. b) PilotNET architecture with ES-optimized DNN layers. c) Half-Size PilotNET with ES-optimized DNN layers. d) Quarter-Size PilotNET with ES-optimized DNN layers. }
+    \label{fig:alexnet}
+\end{figure}
+
+
+% TODO: Figure out how to allow for text wrap in table
+\begin{table}[h]
+    \centering
+    \caption{Model Test Metrics}
+    \begin{tabular}{c|c|c|c|c|c}
+    
+        \textbf{Model}  & \textbf{Model Archtecture} & \textbf{Loss} & \textbf{Error} & \textbf{Model Network Size (Million Parameters)} & \textbf{Model File Size (MB)} \\
+        \hline
+        PilotNET with baseline Convolutional and Dense architecture & 20\% to 300\% of PilotNet \\
+        Batch Size              & 1 - 32                    \\
+        Learning Rate           & 0.001 - 1.5               \\
+        Activation Function     & ReLU, eLU, Sigmoid, Tanh  \\
+        Optimizer               & Adam, SGD, RMSprop        \\
+        
+    \end{tabular}
+    \label{tab:testmetrics}
+\end{table}
+
 \section{Discussion}
 The results demonstrate the effectiveness of using evolutionary strategies (ES) with 1/5 success rule to optimize CNN architectures for steering angle prediction in autonomous driving systems and hence meets our goals. Key findings include:
 Baseline Performance: The PilotNET baseline achieved reasonable accuracy but required significant computational resources due to its large model size (245.40 million parameters, 936.44 MB).
@@ -185,31 +250,12 @@ Evaluate optimized models on low-power compute platforms, such as NVIDIA Jetson 
 
 \section*{Acknowledgment}
 
+% TODO: Remove this section, we do not have anyone to acknowledge
+
 The preferred spelling of the word ``acknowledgment'' in America is without
 an ``e'' after the ``g''. Avoid the stilted expression ``one of us (R. B.
 G.) thanks $\ldots$''. Instead, try ``R. B. G. thanks$\ldots$''. Put sponsor
 acknowledgments in the unnumbered footnote on the first page.
-
-\section*{References}
-
-Please number citations consecutively within brackets \cite{}. The
-sentence punctuation follows the bracket \cite{}. Refer simply to the reference
-number, as in \cite{}---do not use ``Ref. \cite{}'' or ``reference \cite{}'' except at
-the beginning of a sentence: ``Reference \cite{} was the first $\ldots$''
-
-Number footnotes separately in superscripts. Place the actual footnote at
-the bottom of the column in which it was cited. Do not put footnotes in the
-abstract or reference list. Use letters for table footnotes.
-
-Unless there are six authors or more give all authors' names; do not use
-``et al.''. Papers that have not been published, even if they have been
-submitted for publication, should be cited as ``unpublished'' \cite{}. Papers
-that have been accepted for publication should be cited as ``in press'' \cite{}.
-Capitalize only the first word in a paper title, except for proper nouns and
-element symbols.
-
-For papers published in translation journals, please give the English
-citation first, followed by the original foreign-language citation \cite{}.
 
 \bibliographystyle{plain} % We choose the "plain" reference style
 \bibliography{references} % Entries are in the references.bib file
