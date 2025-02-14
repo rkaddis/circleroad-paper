@@ -23,17 +23,12 @@ Jia Deng, Wei Dong, Richard Socher, Li-Jia Li, Kai Li, and Li~Fei-Fei.
 \bibitem{self_drive_latency_and_model_size_drawbacks}
 Truong-Dong Do, Minh-Thien Duong, Quoc-Vu Dang, and My-Ha Le.
 \newblock Real-time self-driving car navigation using deep neural network.
-\newblock In {\em 2018 4th International Conference on Green Technology and Sustainable Development (GTSD)}, pages 7--12, 2018.
+\newblock In {\em 2018 4th International Conference on Green Technology and Sustainable Development (GTSD)}, 2018.
 
 \bibitem{lane_detection_good_results_zigzag}
 Fayez Faizi and Ahmed Alsulaifanie.
 \newblock Steering angle prediction via neural networks.
 \newblock {\em Indonesian Journal of Electrical Engineering and Computer Science}, 31:392--399, 07 2023.
-
-\bibitem{KITTI_dataset}
-A~Geiger, P~Lenz, C~Stiller, and R~Urtasun.
-\newblock Vision meets robotics: The kitti dataset.
-\newblock {\em The International Journal of Robotics Research}, 32(11):1231--1237, 2013.
 
 \bibitem{MobileNET_size_and_speed}
 Andrew~G. Howard, Menglong Zhu, Bo~Chen, Dmitry Kalenichenko, Weijun Wang, Tobias Weyand, Marco Andreetto, and Hartwig Adam.
@@ -43,6 +38,10 @@ Andrew~G. Howard, Menglong Zhu, Bo~Chen, Dmitry Kalenichenko, Weijun Wang, Tobia
 Junekyo Jhung, Il~Bae, Jaeyoung Moon, Taewoo Kim, Jincheol Kim, and Shiho Kim.
 \newblock End-to-end steering controller with cnn-based closed-loop feedback for autonomous vehicles.
 \newblock In {\em 2018 IEEE Intelligent Vehicles Symposium (IV)}, pages 617--622, 2018.
+
+\bibitem{gazelle_sim}
+Giuseppe~DeRose Jr.
+\newblock Gazellesim, 2025.
 
 \bibitem{ES_scalable}
 Tim Salimans, Jonathan Ho, Xi~Chen, Szymon Sidor, and Ilya Sutskever.
