@@ -10,6 +10,7 @@
 \usepackage{textcomp}
 \usepackage{xcolor}
 \usepackage{makecell}
+\usepackage{multirow}
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 \begin{document}
@@ -79,7 +80,7 @@ Evolutionary Strategies (ES) offer a compelling advantage in this context. ES is
 
 \textbf{Equipment:} The LTU ACTor autonomous driving platform, integrated with the Robot Operating System (ROS), was used for data collection. Sensor data, including images from the vehicle's forward-facing camera and corresponding steering angles, were recorded in rosbag files. This setup ensured synchronized visual and control data, essential for training and evaluating the models.
 
-\textbf{Environment:} Data was collected along a predefined circular path: the red brick path surrounding Ockham's Wedge at LTU. To introduce variability and enhance model robustness, driving sessions included clockwise and counterclockwise directions, smooth and zigzag maneuvers, and driving along inner and outer path edges to simulate diverse spatial alignments.  Figure~\ref{fig:ockham} shows an overhead view of the data collection site.
+\textbf{Environment:} Data was collected along a predefined circular path: the red brick path surrounding Ockham's Wedge at LTU. To introduce variability and enhance model robustness, driving sessions included clockwise and counterclockwise directions, smooth and zigzag maneuvers, and driving along inner and outer path edges to simulate diverse spatial alignments. Figure~\ref{fig:ockham} shows an overhead view of the data collection site.
 
 \begin{figure}[ht]
     \centering
@@ -98,7 +99,7 @@ Evolutionary Strategies (ES) offer a compelling advantage in this context. ES is
     \label{fig:preprocessed_images}
 \end{figure}
 
-Images were saved at 200 ms intervals, with filenames encoding timestamps and steering angles. Each image was cropped to exclude irrelevant regions, such as the sky and surrounding buildings. The resulting dataset consisted of 2,957 images, split into 70\% training (2,069), 20\% validation (592), and 10\% testing (296). Even though the dataset is small, it is representative of real-world driving scenarios and provides a useful benchmark for evaluating model performance.
+Images were saved at 200 ms intervals, with filenames encoding timestamps and steering angles. Each image was cropped (fixed size and position for all images) to exclude irrelevant regions, such as the sky and surrounding buildings. The resulting dataset consisted of 2,957 images, split into 70\% training (2,069), 20\% validation (592), and 10\% testing (296). Even though the dataset is small, it is representative of real-world driving scenarios and provides a useful benchmark for evaluating model performance.
 
 \subsection{Research Goals}
 
@@ -172,13 +173,13 @@ The Evolutionary Strategy (ES) optimization process unfolds as follows:
               \right.
           \end{equation}
 
-          where \(\sigma_{t+1}\) is the updated step size for the next generation. \(\sigma_t\) is the current step size. \(\alpha > 1\) is a scaling factor to increase the step size (e.g., 1.1). \(\beta < 1\) is a scaling factor to decrease the step size (e.g., 0.9). The "success rate" is defined as the fraction of offspring that outperform their parents in terms of validation performance.
+          where \(\sigma_{t+1}\) is the updated step size for the next generation. \(\sigma_t\) is the current step size. \(\alpha > 1\) is a scaling factor to increase the step size (e.g., 1.22). \(\beta < 1\) is a scaling factor to decrease the step size (e.g., 0.82). The "success rate" is defined as the fraction of offspring that outperform their parents in terms of validation performance.
 
           ~~If the success rate is greater than 1/5, the step size is increased, encouraging greater exploration of the hyperparameter space. Conversely, if the success rate is less than or equal to 1/5, the step size is decreased, promoting more focused refinement of promising solutions. This adaptive mechanism ensures efficient exploration while avoiding premature convergence to local optima.
 
 \end{enumerate}
 
-\textbf{Computational Resources: } Training is performed on Lawrence Technological University's NVIDIA A100 GPU server, enabling efficient parallel training of N parent and M offspring model pools. The large VRAM capacity of the A100 GPU allows for the use of larger N and M values, which increases the diversity of the population and enhances the exploration of the hyperparameter space. The specific values of N and M are determined based on the available computational resources and the complexity of the optimization problem.
+\textbf{Computational Resources: } Training is performed on Lawrence Technological University's NVIDIA A100 GPU server, enabling efficient parallel training of N parent and M offspring model pools. The large VRAM (\(\approx{}\)80GB) capacity of the A100 GPU allows for the use of larger N and M values, which increases the diversity of the population and enhances the exploration of the hyperparameter space. The specific values of N and M are determined based on the available computational resources and the complexity of the optimization problem.
 
 \subsection{Model Selection}
 
@@ -204,7 +205,7 @@ Four different model architectures are proposed for determining the effect of ES
 
 \subsection{Model Testing}
 
-To validate the real-time applicability of the ES-optimized models, a series of tests were conducted within a 2D simulation environment, GazelleSim~\cite{gazelle_sim}. The simulation allows for controlled and repeatable testing of the steering control algorithms on the red brick circular path used for training. This serves as the operational design domain for our ES-optimized models.
+To validate the real-time applicability of the ES-optimized models, a series of tests were conducted within a 2D simulation environment, GazelleSim~\cite{gazelle_sim}. The simulation allows for controlled and repeatable testing of the steering control algorithms on the red brick circular path used for training. This serves as the operational design domain for our ES-optimized models. For variance, both directions (clockwise and counterclockwise) were tested however the difference in performance was negligible.
 
 \begin{figure}[ht]
     \centering
@@ -219,7 +220,7 @@ The autonomous driving testing pipeline operates as follows:
     \item \textbf{Image Acquisition:} Simulated camera images are captured from the 2D environment, representing the vehicle's forward view.
     \item \textbf{Model Inference:} The captured image is fed into the trained model, which predicts a steering angle. The predicteed steering angle represents the desired direction of the vehicle.
     \item \textbf{Steering Control:} The predicted steering angle is then translated into a control command that adjusts the vehicle's trajectory within the simulation. The steering angle is converted into a control signal that influences the vehicle's direction and speed. For real-world testing, this control signal is sent to the real vehicle's steering and throttle actuators instead.
-    \item \textbf{Closed-Loop Feedback:} This whole process creates a closed-loop control system that runs in real-time.
+    \item \textbf{Closed-Loop Feedback:} This pipeline loops back to image acquisition, model inference, and steering control, creating a closed-loop control system that is capable of driving the vehicle in real-time using onboard compute.
 \end{enumerate}
 
 \begin{figure}[ht]
@@ -231,7 +232,8 @@ The autonomous driving testing pipeline operates as follows:
 
 \section{Experimental Results}
 
-Table~\ref{tab:testarch} presents the neurons per layer of each of the four trained and optimized models. Bolded layers are optimized using ES.
+
+Table~\ref{tab:testarch} presents the units per layer of each of the four trained and optimized models. Bolded layers are dynamically optimized using ES with the 1/5 success rule while non-bolded layers are static baseline PilotNET architecture layers modified according to Table~\ref{tab:aliases}.
 
 \newcommand{\gr}{\textgreater}
 
@@ -257,6 +259,34 @@ Table~\ref{tab:testarch} presents the neurons per layer of each of the four trai
     \label{tab:testarch}
 \end{table}
 
+These optimized models were tested in the GazelleSim environment to evaluate their real-time applicability. This test was conducted on a NVIDIA RTX A2000 Laptop GPU with 8GB VRAM and significantly lower power limit (\(\approx{}\)35W) than the A100 GPU used for training. Even though our models do not saturate the VRAM, the power limit and memory bandwidth bottlenecks real-time inference latency psuedo simulating a low power onboard compute environment.
+
+The results are presented in Table~\ref{tab:testresults}. The speeds are not to scale with real-world speeds due to simulator calibration; the results can represent model performance as vehicle speeds increase while inference capacaity is held constant.
+
+\begin{table}[ht]
+    \centering
+    \caption{Test Results}
+    \begin{tabular}{l|c|r}
+        \textbf{Test Duration \& Speed} & \textbf{Model} & \textbf{Distance (m)} \\
+        \hline
+        \multirow{4}{*}{10 min @ 2 m/s} & Baseline       & 1200.026              \\
+                                        & Optimized      & 1200.072              \\
+                                        & Half-Sized     & 1200.206              \\
+                                        & Quarter-Sized  & 1200.169              \\
+        \hline
+        \multirow{4}{*}{60 min @ 2 m/s} & Baseline       & 7200.026              \\
+                                        & Optimized      & 7200.177              \\
+                                        & Half-Sized     & 7200.053              \\
+                                        & Quarter-Sized  & 7200.056              \\
+        \hline
+        \multirow{4}{*}{60 min @ 4 m/s} & Baseline       & 14400.408             \\
+                                        & Optimized      & Failed                \\
+                                        & Half-Sized     & Failed                \\
+                                        & Quarter-Sized  & 14400.400
+    \end{tabular}
+    \label{tab:testresults}
+\end{table}
+
 \begin{figure}[ht]
     \centering
     \includegraphics[width=3in]{assets/alexnet.png}
@@ -264,7 +294,7 @@ Table~\ref{tab:testarch} presents the neurons per layer of each of the four trai
     \label{fig:alexnet}
 \end{figure}
 
-Table~\ref{tab:compute} details the performance and size metrics of each of the four models.
+Table~\ref{tab:compute} details the performance and size metrics of each of the four models. The number of parameters and MSE and MAE were direct output from the Keras API. The VRAM usage was measured using the nvidia-smi command while the tests were running.
 
 \begin{table}[ht!]
     \centering
@@ -283,21 +313,23 @@ Table~\ref{tab:compute} details the performance and size metrics of each of the 
 
 \section{Discussion}
 The results demonstrate the effectiveness of using evolutionary strategies (ES) with 1/5 success rule to optimize CNN architectures for steering angle prediction in autonomous driving systems and hence meets our goals. Key findings include:
-Baseline Performance: The PilotNET baseline achieved reasonable accuracy but required significant computational resources due to its large model size (245.40 million parameters, 936.44 MB).
-This highlights the need for architecture optimization to improve efficiency without sacrificing performance.
-Impact of ES Optimization: The ES-optimized PilotNET model achieved the lowest error (MSE: 0.49, MAE: 0.41 degrees) while significantly reducing the model size (50.97 million parameters, 194.45 MB). Models with reduced convolutional layers showed trade-offs: while they consumed fewer resources, their prediction accuracy relatively suffered, with the quarter-size model exhibiting the highest error (MSE: 1.88, MAE: 0.88 degrees). This study shows that using ES to optimize models for better performance or size reduction while does yield practical results that can improve application efficiency.
-Real-time Performance: Visual results confirm that the optimized models deliver accurate steering predictions even in complex driving scenarios, with low absolute errors between expected and predicted steering angles. In real-world applications a small difference in error (<1.0 degree) with a major difference in model size (5-25\% of baseline size) is a valid tradeoff.
 
-In the future, we plan to:
+\textbf{Baseline Performance: }The PilotNET baseline achieved reasonable accuracy but required significant computational resources due to its large model size (245M params, 936 MB). The baseline model was able to predict steering angles with an average error of 1.01 degrees, and a maximum error of 0.63 degrees both within reasonable real-world driving accuracy. This model had no problems with real-time inference in simulations at 2 m/s and 4 m/s proving its suitability as a baseline for our study. This opens the way for architecture optimization to improve efficiency without sacrificing performance.
+
+\textbf{Impact of ES Optimization: }The ES-optimized PilotNET model achieved the lowest error (MSE: 0.49, MAE: 0.41 degrees) while the model size increased slightly by 5M parameters. While this shows that ES-optimization works to improve model performance, it is important to note that the reduced models (half-size and quarter-size) showed trade-offs. They consumed significantly fewer resources, their prediction accuracy relatively suffered, with the quarter-size model exhibiting the highest error (MSE: 1.88, MAE: 0.88 degrees). Even though a minor increase of error was observed in the quarter-size model, it required only \(\approx{15}\)\% of the baseline model's VRAM for inference all while achieving equivalent performance in real-time simulations. In real-world low speed self-driving applications a small difference in error (\textless1.0 degree) with a significant size reduction is a valid tradeoff.
+
+The 4m/s trials revealed a hard inference rate threshold, with Optimized (250M params) and Half-Sized (61.4M params) failing despite superior theoretical compute capacity. Contrastingly, the Quarter-Sized model completed the 60-minute trial with only 0.006m deviation from Baseline (14400.400m vs. 14400.408m), demonstrating ES's ability to preserve functionality during radical downsizing. Minor performance variations at 2m/s (\textless0.18\% across models) further confirm architectural equivalence under non-saturating conditions.
+
+This highlights the importance of balancing model performance and resource usage in real-world applications. Hence, our study shows that using ES with the 1/5 success rule to optimize models for better performance or size reduction does yield practical results that improve application efficiency. In the future, we plan to:
 \begin{enumerate}
-    \item Expand the dataset by recording driving data on various roads across the LTU campus, including different surfaces, path geometries, and lighting conditions.
-    \item Add Recurrent Neural Network layers to train models based on the past steering inputs.
-    \item Deploy the optimized CNN models on the LTU ACTor autonomous driving platform.
-    \item Evaluate optimized models on low-power compute platforms, such as NVIDIA Jetson or Raspberry Pi, to assess scalability for cost-effective systems.
+    \item Add small datasets by recording driving data on various roads across the LTU campus, including different surfaces, path geometries, and lighting conditions. Techniques like few shot learning and meta continual learning can be explored to further improve model performance.
+    \item Add Recurrent Neural Network layers to train models based on the past steering inputs. This may improve model stability and smoothness.
+    \item Deploy the optimized CNN models on the LTU ACTor autonomous driving platform and compare their performance in real-world scenarios.
+    \item Evaluate these optimized models on low-power compute platforms, such as NVIDIA Jetson or Raspberry Pi, to assess scalability of using ES based optimization for cost-effective systems in autonomous vehicle applications.
 \end{enumerate}
 
 \clearpage
-\bibliographystyle{plain} % We choose the "plain" reference style
+\bibliographystyle{IEEEtran} % We choose the "plain" reference style
 \bibliography{references} % Entries are in the references.bib file
 
 \end{document}
